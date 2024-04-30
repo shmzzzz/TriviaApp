@@ -19,6 +19,8 @@ import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -47,11 +49,27 @@ fun Questions(
     viewModel: QuestionsViewModel
 ) {
     val questions = viewModel.data.value.data?.toMutableList()
+    val questionIndex = remember {
+        mutableIntStateOf(0)
+    }
+
     if (viewModel.data.value.loading == true) {
         CircularProgressIndicator()
     } else {
+        val question = try {
+            questions?.get(questionIndex.intValue)
+        } catch (ex: Exception) {
+            null
+        }
+
         if (questions != null) {
-            QuestionDisplay(question = questions.first())
+            QuestionDisplay(
+                question = question!!,
+                questionIndex = questionIndex,
+                viewModel = viewModel
+            ) {
+                questionIndex.intValue += 1
+            }
         }
     }
 }
@@ -59,8 +77,8 @@ fun Questions(
 @Composable
 fun QuestionDisplay(
     question: QuestionItem,
-//    questionIndex: MutableState<Int>,
-//    viewModel: QuestionsViewModel,
+    questionIndex: MutableState<Int>,
+    viewModel: QuestionsViewModel,
     onNextClicked: (Int) -> Unit = {}
 ) {
     val choicesState = remember(question) {
@@ -91,7 +109,10 @@ fun QuestionDisplay(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
         ) {
-            QuestionTracker()
+            QuestionTracker(
+                counter = questionIndex.value,
+                outOf = viewModel.getTotalQuestionCount(),
+            )
             DrawDottedLine(pathEffect = pathEffect)
 
             Column {
@@ -175,7 +196,9 @@ fun QuestionDisplay(
                 }
 
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        onNextClicked(questionIndex.value)
+                    },
                     modifier = Modifier
                         .padding(3.dp)
                         .align(alignment = Alignment.CenterHorizontally),
@@ -191,7 +214,7 @@ fun QuestionDisplay(
                         fontSize = 17.sp
                     )
                 }
-                
+
             }
         }
     }
