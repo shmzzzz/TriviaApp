@@ -1,0 +1,4 @@
+# TriviaApp
+
+- Hilt
+- Retrofit
