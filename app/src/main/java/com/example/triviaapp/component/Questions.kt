@@ -1,4 +1,4 @@
-package com.example.triviaapp.screen
+package com.example.triviaapp.component
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.triviaapp.model.QuestionItem
+import com.example.triviaapp.screen.QuestionsViewModel
 import com.example.triviaapp.util.AppColors
 
 
@@ -80,8 +81,7 @@ fun QuestionDisplay(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(4.dp),
+            .fillMaxHeight(),
         color = AppColors.mDarkPurple,
     ) {
         Column(
@@ -148,8 +148,27 @@ fun QuestionDisplay(
                                 },
                             )
                         )
-
-                        Text(text = answerText)
+                        val annotatedString = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Light,
+                                    color = if (correctAnswerState.value == true && index == answerState.value) {
+                                        Color.Green
+                                    } else if (correctAnswerState.value == false && index == answerState.value) {
+                                        Color.Red
+                                    } else {
+                                        AppColors.mOffWhite
+                                    },
+                                    fontSize = 17.sp
+                                )
+                            ) {
+                                append(text = answerText)
+                            }
+                        }
+                        Text(
+                            text = annotatedString,
+                            modifier = Modifier.padding(6.dp)
+                        )
                     }
                 }
             }
