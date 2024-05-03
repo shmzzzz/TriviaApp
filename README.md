@@ -1,7 +1,5 @@
 # TriviaApp
 
-- トリビアアプリ
-
 ## 使用技術
 
 ![](https://img.shields.io/badge/jetpack_compose-FF6441)
